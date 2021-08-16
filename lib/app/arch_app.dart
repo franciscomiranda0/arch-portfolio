@@ -1,3 +1,4 @@
+import 'package:arch/app/home/views/home_view.dart';
 import 'package:flutter/material.dart';
 
 class ArchApp extends StatelessWidget {
@@ -8,6 +9,7 @@ class ArchApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      home: HomeView(),
     );
   }
 }
