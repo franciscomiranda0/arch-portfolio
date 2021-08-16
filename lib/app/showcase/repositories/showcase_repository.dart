@@ -1,19 +1,19 @@
 import 'package:arch/app/showcase/repositories/json/database_json.dart';
 
 abstract class ShowcaseRepository {
-  Future getImageListing();
-  Future getTagListing();
+  Future<Map<String, dynamic>> getImageListing();
+  Future<Map<String, dynamic>> getTagListing();
 }
 
 class ShowcaseImageRepositoryImplementation implements ShowcaseRepository {
   @override
   Future<Map<String, dynamic>> getImageListing() async {
-    return await Future.delayed(const Duration(seconds: 1), () => database);
+    return Future.value(database);
   }
 
   @override
   @deprecated
-  Future getTagListing() {
+  Future<Map<String, dynamic>> getTagListing() {
     throw UnimplementedError();
   }
 }
@@ -21,7 +21,7 @@ class ShowcaseImageRepositoryImplementation implements ShowcaseRepository {
 class ShowcaseTagRepositoryImplementation implements ShowcaseRepository {
   @override
   @deprecated
-  Future getImageListing() {
+  Future<Map<String, dynamic>> getImageListing() {
     throw UnimplementedError();
   }
 

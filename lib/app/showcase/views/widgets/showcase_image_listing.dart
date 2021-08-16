@@ -1,6 +1,7 @@
 import 'package:arch/app/showcase/blocs/image_cubit/image_cubit.dart';
 import 'package:arch/app/showcase/repositories/models/showcase.dart';
 import 'package:arch/app/showcase/views/widgets/showcase_image_item.dart';
+import 'package:arch/src/arch_font_size.dart';
 import 'package:arch/src/arch_palette.dart';
 import 'package:arch/src/arch_size.dart';
 import 'package:arch/src/widgets/arch_text.dart';
@@ -19,7 +20,6 @@ class ShowcaseImageListing extends StatefulWidget {
 
 class _ShowcaseImageListingState extends State<ShowcaseImageListing> {
   late final ImageCubit _cubit;
-  bool _shouldShowErrorMessage = false;
 
   @override
   initState() {
@@ -34,7 +34,15 @@ class _ShowcaseImageListingState extends State<ShowcaseImageListing> {
 
   void _getListing() => this._cubit.getImageListing();
 
-  void _onError() => setState(() => this._shouldShowErrorMessage = true);
+  void _onError() => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: ArchText(
+            widget._errorMessage,
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
 
   void _setCubit() => this._cubit = context.read<ImageCubit>();
 
@@ -42,7 +50,6 @@ class _ShowcaseImageListingState extends State<ShowcaseImageListing> {
   Widget build(BuildContext context) {
     return BlocConsumer<ImageCubit, ImageState>(
       listener: (context, state) {
-        print(state.runtimeType);
         if (state is ImageListingLoadError) _onError();
       },
       builder: (context, state) {
@@ -53,8 +60,7 @@ class _ShowcaseImageListingState extends State<ShowcaseImageListing> {
               ArchPalette.accent,
             ),
           );
-        }
-        if (state is ImageListingLoaded) {
+        } else if (state is ImageListingLoaded) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -83,13 +89,16 @@ class _ShowcaseImageListingState extends State<ShowcaseImageListing> {
               )
             ],
           );
-        }
-        if (_shouldShowErrorMessage) {
-          return Expanded(
+        } else if (state is ImageListingLoadError) {
+          return Container(
             child: Center(
-              child: ArchText(
-                widget._errorMessage,
-                color: ArchPalette.accent,
+              child: Transform.rotate(
+                angle: 1.6,
+                child: ArchText(
+                  ':(',
+                  color: ArchPalette.accent,
+                  fontSize: ArchFontSize.heading2,
+                ),
               ),
             ),
           );

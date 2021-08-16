@@ -9,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ShowcaseTagListing extends StatefulWidget {
   const ShowcaseTagListing({Key? key}) : super(key: key);
 
+  final String _errorMessage = 'Não foi possível carregar as Tags';
+
   @override
   _ShowcaseTagListingState createState() => _ShowcaseTagListingState();
 }
@@ -33,11 +35,7 @@ class _ShowcaseTagListingState extends State<ShowcaseTagListing> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TagCubit, TagState>(
-      listener: (context, state) {
-        print(state.runtimeType);
-        if (state is TagListingLoaded) print(state.tagListing);
-      },
+    return BlocBuilder<TagCubit, TagState>(
       builder: (context, state) {
         if (state is TagListingLoading) {
           return LinearProgressIndicator(
@@ -61,7 +59,7 @@ class _ShowcaseTagListingState extends State<ShowcaseTagListing> {
           );
         }
         return ArchText(
-          'Não foi possível carregar as Tags',
+          widget._errorMessage,
           color: ArchPalette.accent,
         );
       },
