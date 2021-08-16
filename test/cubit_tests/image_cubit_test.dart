@@ -8,8 +8,8 @@ class SpyImageRepositoryImplementation extends Mock
     implements ShowcaseImageRepositoryImplementation {}
 
 void main() {
-  late final ImageCubit _cubit;
-  late final ShowcaseRepository _repository;
+  late ImageCubit _cubit;
+  late ShowcaseRepository _repository;
 
   setUp(() {
     _repository = SpyImageRepositoryImplementation();
@@ -28,19 +28,52 @@ void main() {
       expect(_cubit.state, isA<ImageInitial>());
     });
 
-    test('Should emit [ImageListingLoading, ImageListingLoaded].', () async {
+    test('Should emit [ImageListingLoading, ImageListingLoaded].', () {
       when(_repository.getImageListing())
-          .thenAnswer((realInvocation) => Future.value(database));
+          .thenAnswer((realInvocation) async => Future.value(database));
 
       expectLater(
         _cubit.stream,
         emitsInOrder([
           isA<ImageListingLoading>(),
-          isA<ImageListingLoaded>(),
+          isA<ImageListingLoaded>().having(
+            (state) => state.showcaseListing.length,
+            'length == 8',
+            8,
+          ),
         ]),
       );
 
-      await _cubit.getImageListing();
+      _cubit.getImageListing();
+    });
+
+    test('Should emit [ImageListingLoading, ImageListingNoContent].', () {
+      when(_repository.getImageListing())
+          .thenAnswer((realInvocation) async => Future.value({'data': null}));
+
+      expectLater(
+        _cubit.stream,
+        emitsInOrder([
+          isA<ImageListingLoading>(),
+          isA<ImageListingNoContent>(),
+        ]),
+      );
+
+      _cubit.getImageListing();
+    });
+
+    test('Should emit [ImageListingLoading, ImageListingLoadError].', () {
+      when(_repository.getImageListing()).thenThrow(Exception());
+
+      expectLater(
+        _cubit.stream,
+        emitsInOrder([
+          isA<ImageListingLoading>(),
+          isA<ImageListingLoadError>(),
+        ]),
+      );
+
+      _cubit.getImageListing();
     });
   });
 }
